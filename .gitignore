@@ -1,0 +1,5 @@
+*.config
+*.exe
+*.cache
+*.txt
+*.db

@@ -1,55 +1,55 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Net;
 using System.Windows.Forms;
-using System.Xml;
 using System.Xml.Linq;
 
 namespace YandexFotkiFreshWallpaper
 {
     public partial class Form1 : Form
     {
-        private Timer _updateTimer;
+        private readonly Timer _updateTimer;
         public Form1()
         {
             InitializeComponent();
             _updateTimer = new Timer();
-            var span = new TimeSpan(1,0,0,0);
+            var span = new TimeSpan(0, 3, 0, 0);
             _updateTimer.Interval = (int)Math.Round(span.TotalMilliseconds);
             _updateTimer.Enabled = true;
             _updateTimer.Tick += UpdateTimerOnTick;
             _updateTimer.Start();
-            this.Visible = false;
+            Visible = false;
             notifyIcon1.Visible = true;
             GetInitImage();
         }
 
         private void UpdateTimerOnTick(object sender, EventArgs eventArgs)
         {
-            var getImmageRequest =
-                System.Net.WebRequest.Create(@"http://api-fotki.yandex.ru/api/podhistory/");
-            var response = getImmageRequest.GetResponse();
-            var stream = response.GetResponseStream();
-            if (stream != null)
-                using (var reader = new StreamReader(stream))
-                {
-                    var s = reader.ReadToEnd();
-                    var uri = GetImageUri(s);
-                    pictureBox1.Invoke(new Action<string>(SetImage), uri);
-                }
+            try
+            {
+                var getImmageRequest =
+                    WebRequest.Create(@"http://api-fotki.yandex.ru/api/podhistory/");
+                var response = getImmageRequest.GetResponse();
+                var stream = response.GetResponseStream();
+                if (stream != null)
+                    using (var reader = new StreamReader(stream))
+                    {
+                        var s = reader.ReadToEnd();
+                        var uri = GetImageUri(s);
+                        pictureBox1.Invoke(new Action<string>(SetImage), uri);
+                    }
+            }
+            catch (Exception e)
+            {
+                //TODO: Cath the exceptions
+            }
         }
 
         private void GetInitImage()
         {
             var getImmageRequest =
-                   System.Net.WebRequest.Create(@"http://api-fotki.yandex.ru/api/podhistory/");
+                   WebRequest.Create(@"http://api-fotki.yandex.ru/api/podhistory/");
             var response = getImmageRequest.GetResponse();
             var stream = response.GetResponseStream();
             if (stream != null)
@@ -57,17 +57,22 @@ namespace YandexFotkiFreshWallpaper
                 {
                     var s = reader.ReadToEnd();
                     var uri = GetImageUri(s);
-                    pictureBox1.Load(uri);
-                    pictureBox1.Image.Save(Environment.CurrentDirectory + "\\wallpaper.png", ImageFormat.Png);
-                    Wallpaper.Set(new Uri(Environment.CurrentDirectory + "\\wallpaper.png"), Wallpaper.Style.Filled, Wallpaper.FileType.Png);
+                    var client = new WebClient();
+                    client.DownloadFile(uri, Environment.CurrentDirectory + "\\wallpaper.jpg");
+
+                    pictureBox1.Load(Environment.CurrentDirectory + "\\wallpaper.jpg");
+                    //pictureBox1.Image.Save(Environment.CurrentDirectory + "\\wallpaper.jpg", ImageFormat.Png);
+                    Wallpaper.Set(new Uri(uri), Wallpaper.Style.Filled, Wallpaper.FileType.Jpg);
                 }
         }
 
         private void SetImage(string uri)
         {
-            pictureBox1.Load(uri);
-            pictureBox1.Image.Save(Environment.CurrentDirectory + "\\wallpaper.png", ImageFormat.Png);
-            Wallpaper.Set(new Uri(Environment.CurrentDirectory + "\\wallpaper.png"), Wallpaper.Style.Filled, Wallpaper.FileType.Png);
+            var client = new WebClient();
+            client.DownloadFile(uri, Environment.CurrentDirectory + "\\wallpaper.jpg");
+
+            pictureBox1.Load(Environment.CurrentDirectory + "\\wallpaper.jpg");
+            Wallpaper.Set(new Uri(uri), Wallpaper.Style.Filled, Wallpaper.FileType.Jpg);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -79,9 +84,18 @@ namespace YandexFotkiFreshWallpaper
         {
             var xmlDoc = XDocument.Parse(responseXml);
 
-            var entries = xmlDoc.Element(XName.Get("feed", "http://www.w3.org/2005/Atom")).Element(XName.Get("entry", "http://www.w3.org/2005/Atom")).Elements(XName.Get("img", "yandex:fotki"));
-            var imgUri = entries.Where(x => x.Attribute(XName.Get("size", "")).Value == "orig").Select(x => x.Attribute(XName.Get("href", "")).Value).FirstOrDefault();
-            return imgUri;
+            var xElement = xmlDoc.Element(XName.Get("feed", "http://www.w3.org/2005/Atom"));
+            if (xElement != null)
+            {
+                var element = xElement.Element(XName.Get("entry", "http://www.w3.org/2005/Atom"));
+                if (element != null)
+                {
+                    var entries = element.Elements(XName.Get("img", "yandex:fotki"));
+                    var imgUri = entries.Where(x => x.Attribute(XName.Get("size", "")).Value == "orig").Select(x => x.Attribute(XName.Get("href", "")).Value).FirstOrDefault();
+                    return imgUri;
+                }
+            }
+            return null;
         }
 
         private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
