@@ -21,13 +21,14 @@ namespace YandexFotkiFreshWallpaper
         {
             InitializeComponent();
             _updateTimer = new Timer();
-            var span = new TimeSpan(1,0,0);
+            var span = new TimeSpan(1,0,0,0);
             _updateTimer.Interval = (int)Math.Round(span.TotalMilliseconds);
             _updateTimer.Enabled = true;
             _updateTimer.Tick += UpdateTimerOnTick;
             _updateTimer.Start();
             this.Visible = false;
             notifyIcon1.Visible = true;
+            GetInitImage();
         }
 
         private void UpdateTimerOnTick(object sender, EventArgs eventArgs)
@@ -42,6 +43,23 @@ namespace YandexFotkiFreshWallpaper
                     var s = reader.ReadToEnd();
                     var uri = GetImageUri(s);
                     pictureBox1.Invoke(new Action<string>(SetImage), uri);
+                }
+        }
+
+        private void GetInitImage()
+        {
+            var getImmageRequest =
+                   System.Net.WebRequest.Create(@"http://api-fotki.yandex.ru/api/podhistory/");
+            var response = getImmageRequest.GetResponse();
+            var stream = response.GetResponseStream();
+            if (stream != null)
+                using (var reader = new StreamReader(stream))
+                {
+                    var s = reader.ReadToEnd();
+                    var uri = GetImageUri(s);
+                    pictureBox1.Load(uri);
+                    pictureBox1.Image.Save(Environment.CurrentDirectory + "\\wallpaper.png", ImageFormat.Png);
+                    Wallpaper.Set(new Uri(Environment.CurrentDirectory + "\\wallpaper.png"), Wallpaper.Style.Filled, Wallpaper.FileType.Png);
                 }
         }
 
