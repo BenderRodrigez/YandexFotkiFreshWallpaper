@@ -122,11 +122,21 @@ namespace YandexFotkiFreshWallpaper
         private void toolStripMenuItem1_Click(object sender, EventArgs e)
         {
             Visible = !Visible;
+            if (Visible)
+            {
+                WindowState = FormWindowState.Normal;
+            }
         }
 
         private void toolStripMenuItem2_Click(object sender, EventArgs e)
         {
             Application.Exit();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            var time = dateTimePicker1.Value;
+            _updateTimer.Interval = (int)(new TimeSpan(time.Hour, time.Minute, time.Second).TotalMilliseconds);
         }
     }
 }
