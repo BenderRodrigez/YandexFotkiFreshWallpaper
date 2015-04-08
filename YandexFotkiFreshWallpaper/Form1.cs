@@ -90,8 +90,10 @@ namespace YandexFotkiFreshWallpaper
                 var element = xElement.Element(XName.Get("entry", "http://www.w3.org/2005/Atom"));
                 if (element != null)
                 {
-                    var entries = element.Elements(XName.Get("img", "yandex:fotki"));
-                    var imgUri = entries.Where(x => x.Attribute(XName.Get("size", "")).Value == "orig").Select(x => x.Attribute(XName.Get("href", "")).Value).FirstOrDefault();
+                    var entries = element.Elements(XName.Get("content", "http://www.w3.org/2005/Atom"));
+                    var imgUri =
+                        entries.Select(x => x.Attribute(XName.Get("src", "")).Value)
+                               .FirstOrDefault();
                     return imgUri;
                 }
             }
