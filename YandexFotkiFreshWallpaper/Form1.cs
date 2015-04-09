@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -49,35 +50,49 @@ namespace YandexFotkiFreshWallpaper
 
         private void GetInitImage()
         {
-            var getImmageRequest =
-                   WebRequest.Create(@"http://api-fotki.yandex.ru/api/podhistory/");
-            var response = getImmageRequest.GetResponse();
-            var stream = response.GetResponseStream();
-            if (stream != null)
-                using (var reader = new StreamReader(stream))
-                {
-                    var s = reader.ReadToEnd();
-                    var uri = GetImageUri(s);
-                    if (!string.IsNullOrWhiteSpace(uri))
+            try
+            {
+                var getImmageRequest =
+                    WebRequest.Create(@"http://api-fotki.yandex.ru/api/podhistory/");
+                var response = getImmageRequest.GetResponse();
+                var stream = response.GetResponseStream();
+                if (stream != null)
+                    using (var reader = new StreamReader(stream))
                     {
+                        var s = reader.ReadToEnd();
+                        var uri = GetImageUri(s);
+                        if (!string.IsNullOrWhiteSpace(uri))
+                        {
 
-                        var client = new WebClient();
-                        client.DownloadFile(uri, Environment.CurrentDirectory + "\\wallpaper.jpg");
+                            //var client = new WebClient();
+                            //client.DownloadFile(uri, Environment.CurrentDirectory + "\\wallpaper.jpg");
 
-                        pictureBox1.Load(Environment.CurrentDirectory + "\\wallpaper.jpg");
-                        //pictureBox1.Image.Save(Environment.CurrentDirectory + "\\wallpaper.jpg", ImageFormat.Png);
-                        Wallpaper.Set(new Uri(uri), Wallpaper.Style.Filled, Wallpaper.FileType.Jpg);
+                            pictureBox1.Load(uri);
+                            //pictureBox1.Image.Save(Environment.CurrentDirectory + "\\wallpaper.jpg", ImageFormat.Png);
+                            Wallpaper.Set(new Uri(uri), Wallpaper.Style.Filled, Wallpaper.FileType.Jpg);
+                        }
                     }
-                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
 
         private void SetImage(string uri)
         {
-            var client = new WebClient();
-            client.DownloadFile(uri, Environment.CurrentDirectory + "\\wallpaper.jpg");
+            try
+            {
+                //var client = new WebClient();
+                //client.DownloadFile(uri, Environment.CurrentDirectory + "\\wallpaper.jpg");
 
-            pictureBox1.Load(Environment.CurrentDirectory + "\\wallpaper.jpg");
-            Wallpaper.Set(new Uri(uri), Wallpaper.Style.Filled, Wallpaper.FileType.Jpg);
+                pictureBox1.Load(uri);
+                Wallpaper.Set(new Uri(uri), Wallpaper.Style.Filled, Wallpaper.FileType.Jpg);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)

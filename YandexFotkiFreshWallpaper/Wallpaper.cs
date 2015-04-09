@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
@@ -60,20 +61,20 @@ namespace YandexFotkiFreshWallpaper
                     switch (style)
                     {
                         case Style.Stretched:
-                            key.SetValue(@"WallpaperStyle", 2.ToString());
-                            key.SetValue(@"TileWallpaper", 0.ToString());
+                            key.SetValue(@"WallpaperStyle", 2.ToString(CultureInfo.InvariantCulture));
+                            key.SetValue(@"TileWallpaper", 0.ToString(CultureInfo.InvariantCulture));
                             break;
                         case Style.Centered:
-                            key.SetValue(@"WallpaperStyle", 1.ToString());
-                            key.SetValue(@"TileWallpaper", 0.ToString());
+                            key.SetValue(@"WallpaperStyle", 1.ToString(CultureInfo.InvariantCulture));
+                            key.SetValue(@"TileWallpaper", 0.ToString(CultureInfo.InvariantCulture));
                             break;
                         case Style.Tiled:
-                            key.SetValue(@"WallpaperStyle", 1.ToString());
-                            key.SetValue(@"TileWallpaper", 1.ToString());
+                            key.SetValue(@"WallpaperStyle", 1.ToString(CultureInfo.InvariantCulture));
+                            key.SetValue(@"TileWallpaper", 1.ToString(CultureInfo.InvariantCulture));
                             break;
                         case Style.Filled:
-                            key.SetValue(@"WallpaperStyle", 10.ToString());
-                            key.SetValue(@"TileWallpaper", 0.ToString());
+                            key.SetValue(@"WallpaperStyle", 10.ToString(CultureInfo.InvariantCulture));
+                            key.SetValue(@"TileWallpaper", 0.ToString(CultureInfo.InvariantCulture));
                             break;
                     }
                 }
