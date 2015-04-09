@@ -37,7 +37,8 @@ namespace YandexFotkiFreshWallpaper
                     {
                         var s = reader.ReadToEnd();
                         var uri = GetImageUri(s);
-                        pictureBox1.Invoke(new Action<string>(SetImage), uri);
+                        if (!string.IsNullOrWhiteSpace(uri))
+                            pictureBox1.Invoke(new Action<string>(SetImage), uri);
                     }
             }
             catch (Exception e)
@@ -57,12 +58,16 @@ namespace YandexFotkiFreshWallpaper
                 {
                     var s = reader.ReadToEnd();
                     var uri = GetImageUri(s);
-                    var client = new WebClient();
-                    client.DownloadFile(uri, Environment.CurrentDirectory + "\\wallpaper.jpg");
+                    if (!string.IsNullOrWhiteSpace(uri))
+                    {
 
-                    pictureBox1.Load(Environment.CurrentDirectory + "\\wallpaper.jpg");
-                    //pictureBox1.Image.Save(Environment.CurrentDirectory + "\\wallpaper.jpg", ImageFormat.Png);
-                    Wallpaper.Set(new Uri(uri), Wallpaper.Style.Filled, Wallpaper.FileType.Jpg);
+                        var client = new WebClient();
+                        client.DownloadFile(uri, Environment.CurrentDirectory + "\\wallpaper.jpg");
+
+                        pictureBox1.Load(Environment.CurrentDirectory + "\\wallpaper.jpg");
+                        //pictureBox1.Image.Save(Environment.CurrentDirectory + "\\wallpaper.jpg", ImageFormat.Png);
+                        Wallpaper.Set(new Uri(uri), Wallpaper.Style.Filled, Wallpaper.FileType.Jpg);
+                    }
                 }
         }
 
