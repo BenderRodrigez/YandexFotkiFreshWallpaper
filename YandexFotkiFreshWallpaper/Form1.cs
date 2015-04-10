@@ -11,6 +11,9 @@ namespace YandexFotkiFreshWallpaper
     public partial class Form1 : Form
     {
         private readonly Timer _updateTimer;
+
+        private string popular = "http://api-fotki.yandex.ru/api/top/?limit=10";
+        private string picOfDay = "http://api-fotki.yandex.ru/api/podhistory/";
         public Form1()
         {
             InitializeComponent();
@@ -30,7 +33,7 @@ namespace YandexFotkiFreshWallpaper
             try
             {
                 var getImmageRequest =
-                    WebRequest.Create(@"http://api-fotki.yandex.ru/api/podhistory/");
+                    WebRequest.Create(popular);
                 var response = getImmageRequest.GetResponse();
                 var stream = response.GetResponseStream();
                 if (stream != null)
@@ -53,7 +56,7 @@ namespace YandexFotkiFreshWallpaper
             try
             {
                 var getImmageRequest =
-                    WebRequest.Create(@"http://api-fotki.yandex.ru/api/podhistory/");
+                    WebRequest.Create(popular);
                 var response = getImmageRequest.GetResponse();
                 var stream = response.GetResponseStream();
                 if (stream != null)
